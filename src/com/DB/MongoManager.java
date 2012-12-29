@@ -3,10 +3,10 @@ package com.DB;
 import java.net.UnknownHostException;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import com.mongodb.MongoURI;
 
 public class MongoManager implements IDBManager{
 	private Mongo mongo;
@@ -19,7 +19,13 @@ public class MongoManager implements IDBManager{
 	private DB db;
 
 	public MongoManager () throws UnknownHostException{
-		this.mongo = new Mongo("127.0.0.1", 27017);
+		this.mongo = new Mongo("192.168.0.122", 27017);
+        this.db = mongo.getDB(db_name);
+        this.collection = db.getCollection(db_collection);
+	}
+	
+	public MongoManager (String url) throws UnknownHostException{
+		this.mongo = new Mongo(new MongoURI(url));
         this.db = mongo.getDB(db_name);
         this.collection = db.getCollection(db_collection);
 	}

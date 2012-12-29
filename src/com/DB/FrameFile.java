@@ -33,8 +33,9 @@ public class FrameFile {
 	public static void main(String[] args) throws IOException {
 		FrameFile f = new FrameFile("/tmp/0/1.jpg");
 		Frame frame = f.toFrame();
-		IDBManager mongo = new MongoManager();
-		mongo.WriteFrame(frame,1000);
+//		IDBManager mongo = new MongoManager();
+		IDBManager mongo = new MongoManager("mongodb://192.168.0.122:27017,192.168.0.79:27017,192.168.42.13:27017");
+		mongo.WriteFrame(frame,10);
 	}
 
 }
