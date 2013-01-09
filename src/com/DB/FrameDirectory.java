@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import com.google.common.primitives.Longs;
+import com.mongodb.MongoOptions;
+
 import java.util.Comparator;
 
 public class FrameDirectory{
@@ -34,18 +37,32 @@ public class FrameDirectory{
 			Frame frame = frameFile.toFrame();
 			frame.setSource("directory");
 			mongo.WriteFrame(frame);
-			System.out.println(file.toString() + " " + frame.getSource());
+			System.out.println(file.toString() + " " + frame.getTimestamp() + "(" + new Date(frame.getTimestamp()) + ")");
 		}
 	}
 	
 	public static void main(String[] args) throws IOException {
-//		FrameDirectory folder = new FrameDirectory("/tmp/0");
 		FrameDirectory folder = new FrameDirectory("/home/user/Изображения/Настройка для кластера");
 
-		IDBManager mongo = new MongoManager();
+//		Single-node constructor
+//		IDBManager mongo = new MongoManager();
+//		
+//		ReplicaSet constructor with default MongoOptions
+//		IDBManager mongo = new MongoManager("mongodb://192.168.0.122:27017,192.168.0.79:27017,192.168.42.13:27017");
+
+//		ReplicaSet constructor with current MongoOptions
+		MongoOptions mo = new MongoOptions();
+		mo.connectTimeout = 500;
+		mo.wtimeout = 1000;
+		mo.w = 2;	
+		mo.autoConnectRetry = true;
+		mo.safe = true;
+		IDBManager mongo = new MongoManager("192.168.0.122:27017,192.168.0.79:27017,192.168.42.13:27017", mo);
+
 		while  (true){
 			folder.writeToMongo(mongo);
 		}
+		
 //		System.out.println(folder.files.toString());
 	}
 

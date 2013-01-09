@@ -1,12 +1,14 @@
 package com.DB;
 
 import java.net.UnknownHostException;
-
+import java.util.ArrayList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import com.mongodb.MongoOptions;
 import com.mongodb.MongoURI;
+import com.mongodb.ServerAddress;
 
 public class MongoManager implements IDBManager{
 	private Mongo mongo;
@@ -29,11 +31,32 @@ public class MongoManager implements IDBManager{
         this.db = mongo.getDB(db_name);
         this.collection = db.getCollection(db_collection);
 	}
+	
+	public MongoManager (String url, MongoOptions mo) throws UnknownHostException{
+		
+		ArrayList<ServerAddress> addr = new ArrayList<ServerAddress>();
+		for (String s: url.split(",")) {
+		    addr.add(new ServerAddress(s));
+		}
+		this.mongo = new Mongo(addr, mo);
+		
+//		may be different
+/* 		WriteConcern w = new WriteConcern( 1, 2000 );
+		mongo.setWriteConcern( w );*/
+
+		this.db = mongo.getDB(db_name);
+        this.collection = db.getCollection(db_collection);
+	}
+	
 
 	@Override
 	public void WriteFrame(Frame frame) {
 		BasicDBObject document = frame.toDBObject();
-		collection.insert(document);
+		try {
+			collection.insert(document);
+		} catch (RuntimeException e) {
+			System.out.println(e);
+		}
 	}
 	
 	@Override
