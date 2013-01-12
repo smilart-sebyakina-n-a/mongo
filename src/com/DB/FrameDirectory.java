@@ -37,28 +37,31 @@ public class FrameDirectory{
 			Frame frame = frameFile.toFrame();
 			frame.setSource("directory");
 			mongo.WriteFrame(frame);
-			System.out.println(file.toString() + " " + frame.getTimestamp() + "(" + new Date(frame.getTimestamp()) + ")");
+			System.out.println(file.toString() + " " + frame.getTimestamp() + "(" + new Date(frame.getTimestamp()) + ") " + frame.getPixels());
 		}
 	}
 	
 	public static void main(String[] args) throws IOException {
 		FrameDirectory folder = new FrameDirectory("/home/user/Изображения/Настройка для кластера");
 
-//		Single-node constructor
-//		IDBManager mongo = new MongoManager();
+//*		Single-node constructor, including, mongos-server (if tuned sharding from mongos-console)
+//		IDBManager mongo = new MongoManager("mongodb://192.168.0.79:3000");
 //		
-//		ReplicaSet constructor with default MongoOptions
+//*		ReplicaSet constructor with default MongoOptions
 //		IDBManager mongo = new MongoManager("mongodb://192.168.0.122:27017,192.168.0.79:27017,192.168.42.13:27017");
 
-//		ReplicaSet constructor with current MongoOptions
-		MongoOptions mo = new MongoOptions();
-		mo.connectTimeout = 500;
-		mo.wtimeout = 1000;
-		mo.w = 2;	
-		mo.autoConnectRetry = true;
-		mo.safe = true;
-		IDBManager mongo = new MongoManager("192.168.0.122:27017,192.168.0.79:27017,192.168.42.13:27017", mo);
-
+//*		ReplicaSet constructor with current MongoOptions
+//		MongoOptions mo = new MongoOptions();
+//		mo.connectTimeout = 500;
+//		mo.wtimeout = 1000;
+//		mo.w = 2;	
+//		mo.autoConnectRetry = true;
+//		mo.safe = true;
+//		IDBManager mongo = new MongoManager("192.168.0.122:27017,192.168.0.79:27017,192.168.42.13:27017", mo);
+		
+//*		Mongos-node constructor, passes ip_mongos, two ip_shards and value key sharding (field "pixels")
+//*		Including tuned sharding parameters.		
+		IDBManager mongo = new MongoManager("192.168.0.79:3000", "192.168.0.122:27018", "192.168.42.13:27018", 500000);
 		while  (true){
 			folder.writeToMongo(mongo);
 		}
